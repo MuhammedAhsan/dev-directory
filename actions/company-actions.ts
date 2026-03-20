@@ -1,4 +1,5 @@
-import { prisma } from "@/lib/prisma";
+import { randomUUID } from "node:crypto";
+import { supabase } from "@/lib/supabase";
 import { companySchema, type CompanySchemaInput } from "@/lib/validations/company";
 import { toRecruiterArray, toStringArray } from "@/lib/utils";
 import type { CompanyItem, CompanyListResult } from "@/types/company";
@@ -12,35 +13,75 @@ type ListCompaniesParams = {
   sortOrder?: "asc" | "desc";
 };
 
-function isDatabaseConnectionError(error: unknown): boolean {
-  if (!error || typeof error !== "object") {
-    return false;
-  }
-
-  const maybeError = error as { code?: string; message?: string };
-
-  if (maybeError.code === "P1001") {
-    return true;
-  }
-
-  return maybeError.message?.includes("Can't reach database server") ?? false;
-}
-
-function mapCompany(company: {
+type CompanyRow = {
   id: string;
   name: string;
   website: string;
   linkedinUrl: string;
   cities: unknown;
   recruiters: unknown;
-  createdAt: Date;
-  updatedAt: Date;
-}): CompanyItem {
+  createdAt: string | Date;
+  updatedAt: string | Date;
+};
+
+function toErrorInfo(error: unknown): { code?: string; message: string } {
+  if (error && typeof error === "object") {
+    const record = error as Record<string, unknown>;
+    return {
+      code: typeof record.code === "string" ? record.code : undefined,
+      message: typeof record.message === "string" ? record.message : "Unknown database error",
+    };
+  }
+
+  return {
+    message: String(error ?? "Unknown database error"),
+  };
+}
+
+export function isDatabaseConnectionError(error: unknown): boolean {
+  const info = toErrorInfo(error);
+
+  if (info.code === "P1001") {
+    return true;
+  }
+
+  const lowerMessage = info.message.toLowerCase();
+  return (
+    lowerMessage.includes("can't reach database server") ||
+    lowerMessage.includes("fetch failed") ||
+    lowerMessage.includes("enotfound") ||
+    lowerMessage.includes("econnrefused") ||
+    lowerMessage.includes("timed out")
+  );
+}
+
+export function getDatabaseConnectionErrorMessage(error: unknown): string {
+  if (!isDatabaseConnectionError(error)) {
+    return "Database operation failed";
+  }
+
+  return "Database is unreachable. Update DATABASE_URL and DIRECT_URL with the current Supabase connection strings from Project Settings > Database.";
+}
+
+function mapCompany(company: CompanyRow): CompanyItem {
   return {
     ...company,
     cities: toStringArray(company.cities),
     recruiters: toRecruiterArray(company.recruiters),
+    createdAt: new Date(company.createdAt),
+    updatedAt: new Date(company.updatedAt),
   };
+}
+
+function assertNoSupabaseError(error: unknown) {
+  if (!error) {
+    return;
+  }
+
+  const info = toErrorInfo(error);
+  const wrapped = new Error(info.message);
+  (wrapped as Error & { code?: string }).code = info.code;
+  throw wrapped;
 }
 
 export async function listCompanies({
@@ -55,28 +96,13 @@ export async function listCompanies({
   const safeLimit = Number.isFinite(limit) && limit > 0 ? Math.min(limit, 50) : 10;
   const skip = (safePage - 1) * safeLimit;
 
-  let allCompanies: Array<{
-    id: string;
-    name: string;
-    website: string;
-    linkedinUrl: string;
-    cities: unknown;
-    recruiters: unknown;
-    createdAt: Date;
-    updatedAt: Date;
-  }> = [];
+  const { data, error } = await supabase
+    .from("Company")
+    .select("id,name,website,linkedinUrl,cities,recruiters,createdAt,updatedAt")
+    .order(sortBy, { ascending: sortOrder === "asc" });
 
-  try {
-    allCompanies = await prisma.company.findMany({
-      orderBy: {
-        [sortBy]: sortOrder,
-      },
-    });
-  } catch (error) {
-    if (!isDatabaseConnectionError(error)) {
-      throw error;
-    }
-  }
+  assertNoSupabaseError(error);
+  const allCompanies = (data ?? []) as CompanyRow[];
 
   const normalizedSearch = search.trim().toLowerCase();
   const normalizedCity = city.trim().toLowerCase();
@@ -107,52 +133,61 @@ export async function listCompanies({
 }
 
 export async function getCompanyById(id: string) {
-  let company = null;
+  const { data, error } = await supabase
+    .from("Company")
+    .select("id,name,website,linkedinUrl,cities,recruiters,createdAt,updatedAt")
+    .eq("id", id)
+    .maybeSingle();
 
-  try {
-    company = await prisma.company.findUnique({ where: { id } });
-  } catch (error) {
-    if (!isDatabaseConnectionError(error)) {
-      throw error;
-    }
-  }
-
-  return company ? mapCompany(company) : null;
+  assertNoSupabaseError(error);
+  return data ? mapCompany(data as CompanyRow) : null;
 }
 
 export async function createCompany(payload: CompanySchemaInput) {
   const validated = companySchema.parse(payload);
+  const now = new Date().toISOString();
 
-  const company = await prisma.company.create({
-    data: {
+  const { data, error } = await supabase
+    .from("Company")
+    .insert({
+      id: randomUUID().replace(/-/g, "").slice(0, 24),
       name: validated.name,
       website: validated.website,
       linkedinUrl: validated.linkedinUrl,
       cities: validated.cities,
       recruiters: validated.recruiters,
-    },
-  });
+      createdAt: now,
+      updatedAt: now,
+    })
+    .select("id,name,website,linkedinUrl,cities,recruiters,createdAt,updatedAt")
+    .single();
 
-  return mapCompany(company);
+  assertNoSupabaseError(error);
+  return mapCompany(data as CompanyRow);
 }
 
 export async function updateCompany(id: string, payload: CompanySchemaInput) {
   const validated = companySchema.parse(payload);
 
-  const company = await prisma.company.update({
-    where: { id },
-    data: {
+  const { data, error } = await supabase
+    .from("Company")
+    .update({
       name: validated.name,
       website: validated.website,
       linkedinUrl: validated.linkedinUrl,
       cities: validated.cities,
       recruiters: validated.recruiters,
-    },
-  });
+      updatedAt: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .select("id,name,website,linkedinUrl,cities,recruiters,createdAt,updatedAt")
+    .single();
 
-  return mapCompany(company);
+  assertNoSupabaseError(error);
+  return mapCompany(data as CompanyRow);
 }
 
 export async function deleteCompany(id: string) {
-  await prisma.company.delete({ where: { id } });
+  const { error } = await supabase.from("Company").delete().eq("id", id);
+  assertNoSupabaseError(error);
 }
