@@ -32,27 +32,21 @@ async function main() {
           website: "https://www.systemsltd.com",
           linkedinUrl: "https://www.linkedin.com/company/systems-limited/",
           cities: ["Lahore", "Karachi", "Islamabad"],
-          recruiters: [
-            { name: "Ayesha Malik", linkedinUrl: "https://www.linkedin.com/in/ayesha-malik" },
-            { name: "Hassan Raza", linkedinUrl: "https://www.linkedin.com/in/hassan-raza" },
-          ],
+          recruiters: [{ name: "N/A", linkedinUrl: "#" }],
         },
         {
           name: "NETSOL Technologies",
           website: "https://www.netsoltech.com",
           linkedinUrl: "https://www.linkedin.com/company/netsol-technologies-inc-/",
           cities: ["Lahore"],
-          recruiters: [{ name: "Fatima Noor", linkedinUrl: "https://www.linkedin.com/in/fatima-noor" }],
+          recruiters: [{ name: "N/A", linkedinUrl: "#" }],
         },
         {
           name: "10Pearls",
           website: "https://10pearls.com",
           linkedinUrl: "https://www.linkedin.com/company/10pearls/",
           cities: ["Karachi", "Islamabad"],
-          recruiters: [
-            { name: "Muhammad Ali", linkedinUrl: "https://www.linkedin.com/in/muhammad-ali" },
-            { name: "Sana Tariq", linkedinUrl: "https://www.linkedin.com/in/muhammad-ali" },
-          ],
+          recruiters: [{ name: "N/A", linkedinUrl: "#" }],
         },
       ],
     });

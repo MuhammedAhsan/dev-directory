@@ -44,9 +44,11 @@ export default async function Home({ searchParams }: HomePageProps) {
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,#eef6ff,#f8fbff_40%,#f8fafc_80%)]">
       <SiteHeader />
       <main className="mx-auto w-full max-w-6xl px-4 pb-20 pt-8 sm:px-6 lg:pt-12">
-        <section className="relative isolate overflow-hidden px-1 py-10 sm:px-3 lg:px-4">
-          <div className="pointer-events-none absolute -right-14 -top-12 h-52 w-52 animate-float rounded-full bg-sky-100/90 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-14 left-10 h-44 w-44 animate-float-delay rounded-full bg-blue-100/90 blur-3xl" />
+
+        {/* Hero Section */}
+        <section className="relative isolate overflow-visible px-1 py-10 sm:px-3 lg:px-4">
+          <div className="pointer-events-none absolute -right-14 -top-12 h-52 w-52 animate-float rounded-full bg-sky-200/90 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-14 left-10 h-44 w-44 animate-float-delay rounded-full bg-blue-200/90 blur-3xl" />
 
           <div className="relative animate-fade-up space-y-7">
             <div className="flex flex-wrap items-center gap-2">
@@ -98,6 +100,7 @@ export default async function Home({ searchParams }: HomePageProps) {
           </div>
         </section>
 
+        {/* Trusted By Section */}
         <section className="mt-4 animate-fade-up-delay px-1 sm:px-3 lg:px-4">
           <div className="rounded-3xl bg-white/65 px-5 py-3 backdrop-blur sm:px-6">
           <p className="text-sm text-slate-600">
@@ -107,6 +110,7 @@ export default async function Home({ searchParams }: HomePageProps) {
           </div>
         </section>
 
+        {/* Companies Section */}
         <section id="companies" className="scroll-mt-24 mt-10 animate-fade-up-delay px-1 sm:px-3 lg:px-4">
           <div className="mb-5 max-w-2xl">
             <h2 className="text-3xl font-semibold tracking-tight text-slate-900">Companies</h2>
@@ -120,11 +124,9 @@ export default async function Home({ searchParams }: HomePageProps) {
               <SearchControls search={search} city={city} sortBy={sortBy} sortOrder={sortOrder} />
             </div>
 
-            <div className="rounded-3xl bg-white/68 p-2 backdrop-blur sm:p-3">
+            <div className="rounded-3xl bg-white/68 p-2 space-y-8 backdrop-blur sm:p-3">
               <CompanyTable companies={data.companies} />
-            </div>
 
-            <div className="rounded-3xl bg-white/65 px-4 py-3 backdrop-blur sm:px-5">
               <PaginationControls
                 page={data.page}
                 totalPages={data.totalPages}
@@ -137,6 +139,7 @@ export default async function Home({ searchParams }: HomePageProps) {
           </div>
         </section>
 
+        {/* Why This Works Section */}
         <section id="details" className="scroll-mt-24 mt-10 animate-fade-up-delay-2 px-1 sm:px-3 lg:px-4">
           <h3 className="text-2xl font-semibold tracking-tight text-slate-900">Why This Works</h3>
           <div className="mt-4 grid gap-4 md:grid-cols-3">

@@ -26,11 +26,12 @@ export function CompanyTable({ companies }: CompanyTableProps) {
   }
 
   return (
-    <div className="overflow-hidden rounded-[1.5rem] bg-white/72 shadow-[0_16px_50px_-42px_rgba(15,23,42,0.65)]">
+    <div className="overflow-hidden bg-white/72">
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow style={{ backgroundColor: "rgba(255, 255, 255, 0.8)" }}>
+              <TableHead>#</TableHead>
               <TableHead>Company Name</TableHead>
               <TableHead>Website</TableHead>
               <TableHead>LinkedIn Page</TableHead>
@@ -39,8 +40,9 @@ export function CompanyTable({ companies }: CompanyTableProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {companies.map((company) => (
+            {companies.map((company, index) => (
               <TableRow key={company.id}>
+                <TableCell className="font-medium text-slate-900">{index + 1}</TableCell>
                 <TableCell className="font-medium text-slate-900">{company.name}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
