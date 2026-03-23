@@ -24,7 +24,10 @@ const secureUrl = z
 const tagsArray = z
   .array(z.string().trim().min(1))
   .default([])
-  .transform((items) => items.map((item) => item.trim()).filter(Boolean));
+  .transform((items) => items.map((item) => item.trim()).filter(Boolean))
+  .refine((items) => items.length > 0, {
+    message: "At least one company location is required",
+  });
 
 const recruiterSchema = z.object({
   name: z.string().trim().min(2, "Recruiter name is required"),

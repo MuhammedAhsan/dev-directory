@@ -122,7 +122,13 @@ export function CompanyForm({ mode, companyId, initialValues }: CompanyFormProps
         <label htmlFor="cities" className="mb-1 block text-sm font-medium text-slate-700">
           Cities (comma separated)
         </label>
-        <Input id="cities" value={cities} onChange={(event) => setCities(event.target.value)} placeholder="Karachi, Lahore" />
+        <Input
+          id="cities"
+          value={cities}
+          onChange={(event) => setCities(event.target.value)}
+          placeholder="Karachi, Lahore"
+          required
+        />
       </div>
 
       <div>
