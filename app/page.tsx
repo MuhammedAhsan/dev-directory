@@ -34,6 +34,7 @@ export default async function Home({ searchParams }: HomePageProps) {
     sortBy,
     sortOrder,
   });
+  const rowOffset = (data.page - 1) * data.limit;
 
   const totalRecruiters = data.companies.reduce((sum, company) => sum + company.recruiters.length, 0);
   const topCities = Array.from(
@@ -125,7 +126,7 @@ export default async function Home({ searchParams }: HomePageProps) {
             </div>
 
             <div className="rounded-3xl bg-white/68 p-2 space-y-8 backdrop-blur sm:p-3">
-              <CompanyTable companies={data.companies} />
+              <CompanyTable companies={data.companies} rowOffset={rowOffset} />
 
               <PaginationControls
                 page={data.page}

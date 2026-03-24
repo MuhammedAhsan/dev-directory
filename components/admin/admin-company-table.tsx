@@ -9,9 +9,10 @@ import type { CompanyItem } from "@/types/company";
 
 type AdminCompanyTableProps = {
   companies: CompanyItem[];
+  rowOffset?: number;
 };
 
-export function AdminCompanyTable({ companies }: AdminCompanyTableProps) {
+export function AdminCompanyTable({ companies, rowOffset = 0 }: AdminCompanyTableProps) {
   const router = useRouter();
 
   async function deleteRecord(id: string) {
@@ -37,6 +38,7 @@ export function AdminCompanyTable({ companies }: AdminCompanyTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>#</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Cities</TableHead>
               <TableHead>Recruiters</TableHead>
@@ -44,8 +46,9 @@ export function AdminCompanyTable({ companies }: AdminCompanyTableProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {companies.map((company) => (
+            {companies.map((company, index) => (
               <TableRow key={company.id}>
+                <TableCell className="font-medium">{rowOffset + index + 1}</TableCell>
                 <TableCell className="font-medium">{company.name}</TableCell>
                 <TableCell>{company.cities.join(", ") || "-"}</TableCell>
                 <TableCell>{company.recruiters.length}</TableCell>
@@ -63,7 +66,7 @@ export function AdminCompanyTable({ companies }: AdminCompanyTableProps) {
             ))}
             {!companies.length && (
               <TableRow>
-                <TableCell colSpan={4} className="py-10 text-center text-slate-500">
+                <TableCell colSpan={5} className="py-10 text-center text-slate-500">
                   No companies available yet.
                 </TableCell>
               </TableRow>

@@ -7,11 +7,12 @@ type SearchControlsProps = {
   city: string;
   sortBy: "name" | "createdAt";
   sortOrder: "asc" | "desc";
+  basePath?: string;
 };
 
-export function SearchControls({ search, city, sortBy, sortOrder }: SearchControlsProps) {
+export function SearchControls({ search, city, sortBy, sortOrder, basePath = "/" }: SearchControlsProps) {
   return (
-    <form className="grid gap-3 md:grid-cols-4" action="/" method="get">
+    <form className="grid gap-3 md:grid-cols-4" action={basePath} method="get">
       <Input name="search" placeholder="Search company or city" defaultValue={search} />
       <Input name="city" placeholder="Filter city (e.g. Lahore)" defaultValue={city} />
       <select
@@ -33,7 +34,7 @@ export function SearchControls({ search, city, sortBy, sortOrder }: SearchContro
       <div className="md:col-span-4 flex flex-wrap items-center gap-2">
         <Button type="submit">Apply</Button>
         <Link
-          href="/"
+          href={basePath}
           className="inline-flex h-10 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-sm font-medium text-slate-800 shadow-sm transition-colors hover:bg-slate-50"
         >
           Reset

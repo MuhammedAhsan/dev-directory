@@ -2,6 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { listCompanies } from "@/actions/company-actions";
 import { AdminCompanyTable } from "@/components/admin/admin-company-table";
+import { PaginationControls } from "@/components/companies/pagination-controls";
+import { SearchControls } from "@/components/companies/search-controls";
 import { SignOutButton } from "@/components/admin/sign-out-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +13,10 @@ import { ExternalLink } from "lucide-react";
 type DashboardPageProps = {
   searchParams: Promise<{
     page?: string;
+    search?: string;
+    city?: string;
+    sortBy?: "name" | "createdAt";
+    sortOrder?: "asc" | "desc";
   }>;
 };
 
@@ -23,13 +29,20 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
 
   const params = await searchParams;
   const page = Number(params.page ?? "1");
+  const search = params.search ?? "";
+  const city = params.city ?? "";
+  const sortBy = params.sortBy ?? "createdAt";
+  const sortOrder = params.sortOrder ?? "desc";
 
   const data = await listCompanies({
     page,
-    limit: 20,
-    sortBy: "createdAt",
-    sortOrder: "desc",
+    limit: 10,
+    search,
+    city,
+    sortBy,
+    sortOrder,
   });
+  const rowOffset = (data.page - 1) * data.limit;
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6">
@@ -51,7 +64,21 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
           </div>
         </CardHeader>
         <CardContent>
-          <AdminCompanyTable companies={data.companies} />
+          <div className="mb-5 rounded-xl border border-slate-200 bg-white p-4">
+            <SearchControls search={search} city={city} sortBy={sortBy} sortOrder={sortOrder} basePath="/admin/dashboard" />
+          </div>
+
+          <AdminCompanyTable companies={data.companies} rowOffset={rowOffset} />
+
+          <PaginationControls
+            page={data.page}
+            totalPages={data.totalPages}
+            search={search}
+            city={city}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            basePath="/admin/dashboard"
+          />
         </CardContent>
       </Card>
     </main>

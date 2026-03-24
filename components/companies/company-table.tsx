@@ -8,9 +8,10 @@ import type { CompanyItem } from "@/types/company";
 
 type CompanyTableProps = {
   companies: CompanyItem[];
+  rowOffset?: number;
 };
 
-export function CompanyTable({ companies }: CompanyTableProps) {
+export function CompanyTable({ companies, rowOffset = 0 }: CompanyTableProps) {
   const [copying, setCopying] = useState<string | null>(null);
 
   async function copyText(label: string, value: string) {
@@ -42,7 +43,7 @@ export function CompanyTable({ companies }: CompanyTableProps) {
           <TableBody>
             {companies.map((company, index) => (
               <TableRow key={company.id}>
-                <TableCell className="font-medium text-slate-900">{index + 1}</TableCell>
+                <TableCell className="font-medium text-slate-900">{rowOffset + index + 1}</TableCell>
                 <TableCell className="font-medium text-slate-900">{company.name}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
