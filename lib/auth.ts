@@ -31,7 +31,8 @@ export const authOptions: NextAuthOptions = {
           user = await prisma.user.findUnique({
             where: { email: credentials.email.toLowerCase() },
           });
-        } catch {
+        } catch (error) {
+          console.error("[auth] Failed to fetch user during credentials login", error);
           return null;
         }
 
