@@ -13,6 +13,15 @@ type CompanyTableProps = {
 
 export function CompanyTable({ companies, rowOffset = 0 }: CompanyTableProps) {
   const [copying, setCopying] = useState<string | null>(null);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+
+  function toggleRow(id: string) {
+    setExpandedRows(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
 
   async function copyText(label: string, value: string) {
     try {
@@ -105,10 +114,11 @@ export function CompanyTable({ companies, rowOffset = 0 }: CompanyTableProps) {
                     </div>
                     <div className="flex flex-col gap-1">
                       {company.recruiters.length ? (
-                        company.recruiters.map((recruiter) => (
+                        
+                        company.recruiters.slice(0, expandedRows.has(company.id) ? company.recruiters.length : 3).map((recruiter, index) => (
                           recruiter.linkedinUrl ? (
                             <a
-                              key={`${company.id}-${recruiter.name}`}
+                              key={`${index}-${company.id}-${recruiter.name}`}
                               href={recruiter.linkedinUrl}
                               target="_blank"
                               rel="noreferrer"
@@ -118,14 +128,21 @@ export function CompanyTable({ companies, rowOffset = 0 }: CompanyTableProps) {
                               {recruiter.name}
                             </a>
                           ) : (
-                            <span key={`${company.id}-${recruiter.name}`} className="text-sm text-slate-600">
+                            <span key={`${index}-${company.id}-${recruiter.name}`} className="text-sm text-slate-600">
                               {recruiter.name}
                             </span>
                           )
                         ))
                       ) : (
-                        <span className="text-sm text-slate-600">-</span>
+                        <span className="text-sm text-slate-600">N/A</span>
                       )}
+                      {
+                        company.recruiters.length > 3 && (
+                          <span onClick={() => toggleRow(company.id)} className="text-xs text-slate-500 hover:cursor-pointer hover:text-slate-700">
+                            {expandedRows.has(company.id) ? "Show less" : `+${company.recruiters.length - 3} more`}
+                          </span>
+                        )
+                      }
                     </div>
                   </div>
                 </TableCell>

@@ -42,7 +42,7 @@ export default async function Home({ searchParams }: HomePageProps) {
   ).slice(0, 5);
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,#eef6ff,#f8fbff_40%,#f8fafc_80%)]">
+    <div className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#eef6ff,#f8fbff_40%,#f8fafc_80%)]">
       <SiteHeader />
       <main className="mx-auto w-full max-w-6xl px-4 pb-20 pt-8 sm:px-6 lg:pt-12">
 
