@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dev Directory",
+  title: "One Dev Directory",
   description: "A modern directory of tech companies in Pakistan with recruiter profiles and hiring information.",
 };
 

@@ -56,7 +56,7 @@ export default async function Home({ searchParams }: HomePageProps) {
               <Badge variant="success" className="px-3 py-1 text-xs">Modern SaaS Experience</Badge>
               <Badge className="border-sky-200 bg-sky-50 text-sky-700">
                 <Sparkles className="mr-1 h-3.5 w-3.5" />
-                Dev Directory
+                One Dev Directory
               </Badge>
             </div>
 
